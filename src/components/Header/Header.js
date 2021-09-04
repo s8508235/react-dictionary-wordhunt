@@ -1,9 +1,11 @@
-import { createMuiTheme, TextField, ThemeProvider } from "@material-ui/core";
 import React from "react";
-import "./Header.css";
+
+import { createTheme, TextField, ThemeProvider } from "@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
-import countries from "../../data/category";
 import { debounce } from "lodash";
+
+import "./Header.css";
+import countries from "../../data/category";
 
 const Header = ({
   category,
@@ -13,7 +15,7 @@ const Header = ({
   setMeanings,
   LightTheme,
 }) => {
-  const darkTheme = createMuiTheme({
+  const darkTheme = createTheme({
     palette: {
       primary: {
         main: LightTheme ? "#000" : "#fff",
@@ -28,7 +30,7 @@ const Header = ({
     setMeanings([]);
   };
 
-    const handleText = debounce((text) => {
+  const handleText = debounce((text) => {
     setWord(text);
   }, 500);
 
