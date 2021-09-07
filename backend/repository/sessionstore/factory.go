@@ -8,8 +8,13 @@ import (
 	"github.com/gorilla/securecookie"
 )
 
-func New(endpoint, password string) (redis.Store, error) {
-	store, err := redis.NewStore(10, "tcp", endpoint, password, securecookie.GenerateRandomKey(32))
+type Config struct {
+	Endpoint string `env:"REDIS_ENDPOINT"`
+	Passwd   string `env:"REDIS_PASSWD"`
+}
+
+func New(config Config) (redis.Store, error) {
+	store, err := redis.NewStore(10, "tcp", config.Endpoint, config.Passwd, securecookie.GenerateRandomKey(32))
 	if err != nil {
 		return nil, err
 	}

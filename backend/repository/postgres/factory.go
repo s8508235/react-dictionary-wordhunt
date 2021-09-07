@@ -10,8 +10,16 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewPostgresConnection(logger *log.Logger, host, user, password, dbName, port string) (*gorm.DB, error) {
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Taipei", host, user, password, dbName, port)
+type Config struct {
+	Host   string `env:"POSTGRES_HOST"`
+	Port   string `env:"POSTGRES_PORT"`
+	User   string `env:"POSTGRES_USER"`
+	Passwd string `env:"POSTGRES_PASSWD"`
+	DB     string `env:"POSTGRES_DB"`
+}
+
+func NewPostgresConnection(logger *log.Logger, config Config) (*gorm.DB, error) {
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Taipei", config.Host, config.User, config.Passwd, config.DB, config.Port)
 	// dsn := "host=localhost user=postgres password=react-dictionary dbname=postgres port=5432 sslmode=disable TimeZone=Asia/Taipei"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger,

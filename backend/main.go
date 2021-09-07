@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
 	"os/signal"
 	"strings"
 	"syscall"
@@ -16,6 +15,7 @@ import (
 	"github.com/s8508235/tui-dictionary/pkg/log"
 	"gorm.io/gorm"
 
+	env "github.com/Netflix/go-env"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/s8508235/react-dictionary-backend/model"
@@ -26,6 +26,12 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+type Environment struct {
+	Postgres  postgres.Config
+	Redis     sessionstore.Config
+	AlloHosts string `env:"ALLOW_HOSTS,default=*"`
+}
+
 func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
@@ -33,18 +39,24 @@ func main() {
 	if err != nil {
 		panic(fmt.Errorf("loading .env file failed"))
 	}
+	var environment Environment
+	_, err = env.UnmarshalFromEnviron(&environment)
+	if err != nil {
+		panic(fmt.Errorf("loading env failed"))
+	}
 	logger := log.New()
-	db, err := postgres.NewPostgresConnection(logger, os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWD"), os.Getenv("POSTGRES_DB"), os.Getenv("POSTGRES_PORT"))
+	db, err := postgres.NewPostgresConnection(logger, environment.Postgres)
 	if err != nil {
 		panic(fmt.Errorf("unable to establish postgres connection: %w", err))
 	}
 
-	store, err := sessionstore.New(os.Getenv("REDIS_ENDPOINT"), os.Getenv("REDIS_PASSWD"))
+	store, err := sessionstore.New(environment.Redis)
 	if err != nil {
 		panic(fmt.Errorf("unable to init redis session store: %w", err))
 	}
 	router := gin.Default()
-	allowOrigins := strings.Split(os.Getenv("ALLOW_HOSTS"), ",")
+
+	allowOrigins := strings.Split(environment.AlloHosts, ",")
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     allowOrigins,
 		AllowMethods:     []string{"POST", "GET", "DELETE"},

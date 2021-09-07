@@ -8,7 +8,7 @@ import (
 type User struct {
 	gorm.Model
 	Username          string    `gorm:"primaryKey"`
-	ID                uuid.UUID `gorm:"type:uuid;default:gen_random_uuid()"`
+	ID                uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
 	PasswordSignature []byte
 }
 
