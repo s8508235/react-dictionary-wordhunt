@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  # web:
+  #   build: ./backend
+  redis:
+    container_name: cache
+    image: redis:6.2.5
+    command: redis-server --requirepass $REDIS_PASSWORD --appendonly yes
+    ports:
+      - 6379:6379
+    volumes:
+      - redisdata:/data
+  db:
+    container_name: db
+    image: postgres:9.6.23
+    ports:
+      - 5432:5432
+    env_file:
+      - backend/.env
+    volumes:
+      - postgresdata:/data
+
+
+volumes:
+  redisdata:
+  postgresdata:

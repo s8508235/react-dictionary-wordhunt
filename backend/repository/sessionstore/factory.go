@@ -10,7 +10,7 @@ import (
 
 type Config struct {
 	Endpoint string `env:"REDIS_ENDPOINT"`
-	Passwd   string `env:"REDIS_PASSWD"`
+	Passwd   string `env:"REDIS_PASSWORD"`
 }
 
 func New(config Config) (redis.Store, error) {

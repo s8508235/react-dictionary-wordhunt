@@ -14,7 +14,7 @@ type Config struct {
 	Host   string `env:"POSTGRES_HOST"`
 	Port   string `env:"POSTGRES_PORT"`
 	User   string `env:"POSTGRES_USER"`
-	Passwd string `env:"POSTGRES_PASSWD"`
+	Passwd string `env:"POSTGRES_PASSWORD"`
 	DB     string `env:"POSTGRES_DB"`
 }
 
@@ -27,7 +27,7 @@ func NewPostgresConnection(logger *log.Logger, config Config) (*gorm.DB, error) 
 	if err != nil {
 		return nil, err
 	}
-	err = db.AutoMigrate(&model.User{}, &model.Definition{}, &model.Definition{})
+	err = db.AutoMigrate(&model.User{}, &model.Dictionary{}, &model.Definition{})
 	if err != nil {
 		logger.Logrus.Errorln("Fail to migrate db:", err)
 		return nil, err
